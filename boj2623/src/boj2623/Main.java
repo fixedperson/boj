@@ -26,7 +26,6 @@ public class Main {
             for(int j = 0; j < num; j++){
                 singers[j] = Integer.parseInt(st.nextToken());
             }
-
             for(int j = 0; j < num-1; j++){
                 for(int k = j+1; k < num; k++){
                     al.get(singers[j]).add(singers[k]);
