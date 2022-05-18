@@ -25,7 +25,6 @@ public class Main {
             sum += price[i];
             count++;
         }
-
         bw.write(sum + "\n");
         bw.flush();
         bw.close();
