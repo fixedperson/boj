@@ -15,6 +15,7 @@ public class Main {
         }
         Arrays.sort(price);
 
+
         int count = 1;
         int sum = 0;
         for(int i = N-1; i >= 0; i--){
