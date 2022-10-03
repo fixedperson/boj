@@ -6,9 +6,9 @@ import java.util.*;
 public class Main {
     static int[][] map;
     static boolean[][][] visited;
-    static int[] dx = {-1, 0, 1, 0};
-    static int[] dy = {0, -1, 0, 1};
-    static int N,M,K;
+    static int[] dx = {1, 0, -1, 0};
+    static int[] dy = {0, 1, 0, -1};
+    static int N, M, K;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -18,7 +18,7 @@ public class Main {
         M = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
 
-        visited = new boolean[K+1][N+1][M+1];
+        visited = new boolean[N+1][M+1][K+1];
         map = new int[N+1][M+1];
         for(int i = 1; i <= N; i++){
             String s = br.readLine();
@@ -27,71 +27,56 @@ public class Main {
             }
         }
 
-        int answer = bfs();
-
-        bw.write(answer + "\n");
+        bw.write(bfs() + "\n");
         bw.flush();
         bw.close();
         br.close();
     }
 
     static int bfs(){
-        PriorityQueue<Node> pq = new PriorityQueue<>(new Comparator<Node>() {
-            @Override
-            public int compare(Node o1, Node o2) {
-                if(o1.move == o2.move)
-                    return o1.wall - o2.wall;
-                return o1.move - o2.move;
-            }
-        });
-        pq.add(new Node(1,1,0, 1));
-        visited[0][1][1] = true;
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(new Node(1, 1, 0, 1));
+        visited[1][1][0] = true;
 
-        while(!pq.isEmpty()){
-            Node temp = pq.poll();
+        while(!queue.isEmpty()){
+            Node temp = queue.poll();
 
-            if(temp.y == N && temp.x == M)
-                return temp.move;
+            if(temp.x == N && temp.y == M) return temp.move;
 
             for(int i = 0; i < 4; i++){
-                int ny = temp.y + dy[i];
                 int nx = temp.x + dx[i];
+                int ny = temp.y + dy[i];
 
-                if(ny <= 0 || ny > N || nx <= 0 || nx > M) continue;
+                if(!isValid(nx, ny)) continue;
 
-                if(map[ny][nx] == 0){
-                    if(visited[temp.wall][ny][nx]) continue;
-                    pq.add(new Node(ny, nx, temp.wall, temp.move+1));
-                    visited[temp.wall][ny][nx] = true;
+                if(map[nx][ny] == 1 && temp.wall < K){
+                    if(visited[nx][ny][temp.wall+1]) continue;
+
+                    queue.add(new Node(nx, ny, temp.wall+1, temp.move+1));
+                    visited[nx][ny][temp.wall+1] = true;
                 }
 
-                else {
-                    if(temp.wall+1 > K) continue;
-                    if(visited[temp.wall+1][ny][nx]) continue;
-                    if((temp.move) % 2 == 0) {
-                        pq.add(new Node(ny, nx, temp.wall + 1, temp.move + 2));
-                        visited[temp.wall + 1][ny][nx] = true;
-                    }
-                    else {
-                        pq.add(new Node(ny, nx, temp.wall + 1, temp.move + 1));
-                        visited[temp.wall + 1][ny][nx] = true;
-                    }
+                else if(map[nx][ny] == 0){
+                    if(visited[nx][ny][temp.wall]) continue;
+
+                    queue.add(new Node(nx, ny, temp.wall, temp.move+1));
+                    visited[nx][ny][temp.wall] = true;
                 }
             }
         }
 
         return -1;
     }
+    static boolean isValid(int x, int y){
+        return x > 0 && x <= N && y > 0 && y <= M;
+    }
 }
 
 class Node{
-    int x;
-    int y;
-    int wall;
-    int move;
-    Node(int y, int x, int wall, int move){
-        this.y = y;
+    int x, y, wall, move;
+    Node(int x, int y, int wall, int move){
         this.x = x;
+        this.y = y;
         this.wall = wall;
         this.move = move;
     }
